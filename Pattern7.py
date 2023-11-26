@@ -8,7 +8,8 @@ for i in range(r):
             
 '''
 Output:
-     n=3
+     r=3 and c=3
+
      * * *
      *   *
      * * *
