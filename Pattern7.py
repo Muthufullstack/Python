@@ -6,3 +6,10 @@ for i in range(r):
       else:
            print("*" + " " * (c- 2) + "*")
             
+'''
+Output:
+     n=3
+     * * *
+     *   *
+     * * *
+'''
