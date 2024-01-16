@@ -1,5 +1,6 @@
+#Simple authentication using python and mysql
 import mysql.connector
-connection = mysql.connector.connect(host="localhost",user="root",password="arun@2006sql",database="python_db")
+connection = mysql.connector.connect(host="localhost",user="root",password="root",database="python")
 def Signup(): 
     Username=input("Enter your username : ")
     Email=input("Enter your email : ")
