@@ -1,6 +1,9 @@
 #Simple authentication using python and mysql
 import mysql.connector
-connection = mysql.connector.connect(host="localhost",user="root",password="root",database="python")
+from getpass import getpass
+import hashlib
+from tabulate import tabulate
+connection = mysql.connector.connect(host="localhost",user="root",password="arun@2006sql",database="python_dbs")
 def Signup(): 
     Username=input("Enter your username : ")
     Email=input("Enter your email : ")
@@ -12,18 +15,20 @@ def Signup():
     if check:
         print("You already have an account in this website")
     else:
-        Password = int(input("Enter your Password "))
+        Password = getpass("Enter your Password ")
+        hashed_password = hashlib.sha256(Password.encode()).hexdigest()
         sql="INSERT INTO user (Username,Email,Password) VALUE (%s,%s,%s)"
-        user=(Username,Email,Password)
+        user=(Username,Email,hashed_password)
         res.execute(sql,user)
         connection.commit()
         print("Account created successfully")
 def Log_in():
     Username=input("Enter your username : ")
-    Password=int(input("Enter your Password :"))
+    Password=getpass("Enter your Password :")
     res=connection.cursor()
     sql = "SELECT * FROM user WHERE Username = %s AND Password = %s"
-    params = (Username,Password)
+    hashed_password = hashlib.sha256(Password.encode()).hexdigest()
+    params = (Username,hashed_password)
     res.execute(sql, params)
     check=res.fetchone()
     if check:
@@ -32,16 +37,18 @@ def Log_in():
         print("You don't have any account in this website ")
 def change_password():
     username = input("Enter your username: ")
-    old_password = input("Enter your old password: ")
+    old_password = getpass("Enter your old password: ")
     res = connection.cursor()
     sql = "SELECT * FROM user WHERE Username = %s AND Password = %s"
-    user = (username, old_password)
+    hashed_password = hashlib.sha256(old_password.encode()).hexdigest()
+    user = (username,hashed_password)
     res.execute(sql, user)
     check = res.fetchone()
     if check:
-        new_password = input("Enter your new password: ")
+        new_password = getpass("Enter your new password: ")
         sql = "UPDATE user SET Password = %s WHERE Username = %s"
-        user = (new_password, username)
+        hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
+        user = (hashed_password, username)
         res.execute(sql, user)
         connection.commit()
         print("Password changed successfully!")
@@ -53,13 +60,15 @@ def change_password():
             old_password = input("Enter your old password: ")
             res = connection.cursor()
             sql = "SELECT * FROM user WHERE Username = %s AND Password = %s"
-            user = (username, old_password)
+            hashed_password = hashlib.sha256(old_password.encode()).hexdigest()
+            user = (username, hashed_password)
             res.execute(sql, user)
             check = res.fetchone()
             if check:
                new_password = input("Enter your new password: ")
                sql = "UPDATE user SET Password = %s WHERE Username = %s"
-               user = (new_password, username)
+               hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
+               user = (hashed_password, username)
                res.execute(sql, user)
                connection.commit()
                print("Password changed successfully!")
@@ -72,25 +81,24 @@ def change_password():
                chance+=1
 def Delete_Account():
     Username=input("Enter your username : ")
-    Password=input("Enter your Password ")
+    Password=getpass("Enter your Password ")
     res=connection.cursor()
     sql = "SELECT * FROM user WHERE Username = %s AND Password = %s"
-    user = (Username, Password)
+    hashed_password = hashlib.sha256(Password.encode()).hexdigest()
+    user = (Username, hashed_password)
     res.execute(sql, user)
     check = res.fetchone()
     if check:
        sql ="delete from user where Username = %s And Password = %s"
-       user = (Username,Password)
+       user = (Username,hashed_password)
        res.execute(sql,user)
        connection.commit()
        print("Account deleted successfully ")
     else:
         print("You don't have any account in this website")
 #Main Program
-print("1.Create Account ")
-print("2.Login")
-print("3.Change Password ")
-print("4.Delete Account ")
+o=[(1," Create Account "),(2,"Login"),(3,"Change Password"),(4,"Delete Account")]
+print(tabulate(o,headers=["Option","Functions"]))
 opt=int(input("Enter your option:"))
 if(opt == 1):
     Signup()
